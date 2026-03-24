@@ -1,0 +1,44 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id          String       @id @default(cuid())
+  clerkUserId String       @unique
+  email       String       @unique
+  name        String?
+  role        String       @default("assistant")
+  payProfile  PayProfile?
+  workLogs    WorkLog[]
+}
+
+model PayProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id])
+  payType        String   // "hourly", "task", "hybrid"
+  hourlyRate     Float?
+  airbnbClean    Float?
+  kitchenClean   Float?
+  dogWalk        Float?
+  weeklyStipend  Float?
+}
+
+model WorkLog {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id])
+  weekEnding     DateTime
+  hoursLogged    Float?
+  airbnbCleans   Int?     @default(0)
+  kitchenCleans  Int?     @default(0)
+  dogWalks       Int?     @default(0)
+  expensesTotal  Float?   @default(0)
+  receiptUrls    String[]
+  totalPayout    Float
+  submittedAt    DateTime @default(now())
+}
