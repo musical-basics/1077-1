@@ -39,27 +39,22 @@ export function WorkLogForm({ payProfile }: WorkLogFormProps) {
     receiptUrls: [''],
   })
 
-  const showHourly = payProfile.payType === 'hourly' || payProfile.payType === 'hybrid'
-  const showTasks = payProfile.payType === 'task' || payProfile.payType === 'hybrid'
-
   // Calculate live payout estimate
   const estimatedPayout = useMemo(() => {
     let total = 0
 
-    if (showHourly && payProfile.hourlyRate) {
+    if (payProfile.hourlyRate) {
       total += (parseFloat(formData.hoursLogged) || 0) * payProfile.hourlyRate
     }
 
-    if (showTasks) {
-      if (payProfile.airbnbClean) {
-        total += (parseInt(formData.airbnbCleans) || 0) * payProfile.airbnbClean
-      }
-      if (payProfile.kitchenClean) {
-        total += (parseInt(formData.kitchenCleans) || 0) * payProfile.kitchenClean
-      }
-      if (payProfile.dogWalk) {
-        total += (parseInt(formData.dogWalks) || 0) * payProfile.dogWalk
-      }
+    if (payProfile.airbnbClean) {
+      total += (parseInt(formData.airbnbCleans) || 0) * payProfile.airbnbClean
+    }
+    if (payProfile.kitchenClean) {
+      total += (parseInt(formData.kitchenCleans) || 0) * payProfile.kitchenClean
+    }
+    if (payProfile.dogWalk) {
+      total += (parseInt(formData.dogWalks) || 0) * payProfile.dogWalk
     }
 
     total += parseFloat(formData.expensesTotal) || 0
@@ -69,7 +64,7 @@ export function WorkLogForm({ payProfile }: WorkLogFormProps) {
     }
 
     return total
-  }, [formData, payProfile, showHourly, showTasks])
+  }, [formData, payProfile])
 
   const handleChange = useCallback((field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -186,74 +181,66 @@ export function WorkLogForm({ payProfile }: WorkLogFormProps) {
           </Card>
         </div>
 
-        {showHourly && (
-          <div className={styles.fadeUpSection} style={{ animationDelay: '50ms' }}>
-            <Card>
-              <CardHeader>
-                <CardTitle>Hours Logged</CardTitle>
-                <CardDescription>
-                  Enter total hours worked at ${payProfile.hourlyRate?.toFixed(2)}/hr
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
+        <div className={styles.fadeUpSection} style={{ animationDelay: '50ms' }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Hours Logged</CardTitle>
+              <CardDescription>
+                {payProfile.hourlyRate 
+                  ? `Enter total hours worked at $${payProfile.hourlyRate.toFixed(2)}/hr`
+                  : 'Enter total hours worked'}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Input
+                type="number"
+                label="Hours"
+                value={formData.hoursLogged}
+                onChange={e => handleChange('hoursLogged', e.target.value)}
+                placeholder="0"
+                min="0"
+                step="0.5"
+              />
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className={styles.fadeUpSection} style={{ animationDelay: '100ms' }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Task Counts</CardTitle>
+              <CardDescription>Enter the number of tasks completed</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className={styles.taskGrid}>
                 <Input
                   type="number"
-                  label="Hours"
-                  value={formData.hoursLogged}
-                  onChange={e => handleChange('hoursLogged', e.target.value)}
+                  label={payProfile.airbnbClean ? `Airbnb Cleans ($${payProfile.airbnbClean.toFixed(2)} each)` : 'Airbnb Cleans'}
+                  value={formData.airbnbCleans}
+                  onChange={e => handleChange('airbnbCleans', e.target.value)}
                   placeholder="0"
                   min="0"
-                  step="0.5"
                 />
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {showTasks && (
-          <div className={styles.fadeUpSection} style={{ animationDelay: '100ms' }}>
-            <Card>
-              <CardHeader>
-                <CardTitle>Task Counts</CardTitle>
-                <CardDescription>Enter the number of tasks completed</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className={styles.taskGrid}>
-                  {payProfile.airbnbClean && (
-                    <Input
-                      type="number"
-                      label={`Airbnb Cleans ($${payProfile.airbnbClean.toFixed(2)} each)`}
-                      value={formData.airbnbCleans}
-                      onChange={e => handleChange('airbnbCleans', e.target.value)}
-                      placeholder="0"
-                      min="0"
-                    />
-                  )}
-                  {payProfile.kitchenClean && (
-                    <Input
-                      type="number"
-                      label={`Kitchen Cleans ($${payProfile.kitchenClean.toFixed(2)} each)`}
-                      value={formData.kitchenCleans}
-                      onChange={e => handleChange('kitchenCleans', e.target.value)}
-                      placeholder="0"
-                      min="0"
-                    />
-                  )}
-                  {payProfile.dogWalk && (
-                    <Input
-                      type="number"
-                      label={`Dog Walks ($${payProfile.dogWalk.toFixed(2)} each)`}
-                      value={formData.dogWalks}
-                      onChange={e => handleChange('dogWalks', e.target.value)}
-                      placeholder="0"
-                      min="0"
-                    />
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+                <Input
+                  type="number"
+                  label={payProfile.kitchenClean ? `Kitchen Cleans ($${payProfile.kitchenClean.toFixed(2)} each)` : 'Kitchen Cleans'}
+                  value={formData.kitchenCleans}
+                  onChange={e => handleChange('kitchenCleans', e.target.value)}
+                  placeholder="0"
+                  min="0"
+                />
+                <Input
+                  type="number"
+                  label={payProfile.dogWalk ? `Dog Walks ($${payProfile.dogWalk.toFixed(2)} each)` : 'Dog Walks'}
+                  value={formData.dogWalks}
+                  onChange={e => handleChange('dogWalks', e.target.value)}
+                  placeholder="0"
+                  min="0"
+                />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <div className={styles.fadeUpSection} style={{ animationDelay: '150ms' }}>
           <Card>
