@@ -1,0 +1,126 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.title {
+  font-size: 1.875rem;
+  font-weight: 600;
+  color: var(--fg-primary);
+  margin: 0 0 var(--space-xs) 0;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+/* Table */
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--fg-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+  background-color: var(--bg-elevated);
+}
+
+.table tbody td {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border-subtle);
+  color: var(--fg-secondary);
+  font-size: 0.9375rem;
+  vertical-align: middle;
+}
+
+.table tbody tr:hover td {
+  background-color: var(--bg-hover);
+}
+
+.name {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  color: var(--fg-primary) !important;
+  font-weight: 500;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.email {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem !important;
+  color: var(--fg-muted) !important;
+}
+
+.payType {
+  color: var(--fg-secondary);
+}
+
+.notConfigured {
+  color: var(--fg-muted);
+  font-style: italic;
+}
+
+.viewLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--accent-primary);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: opacity var(--transition-default);
+}
+
+.viewLink:hover {
+  opacity: 0.8;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .table thead th,
+  .table tbody td {
+    padding: var(--space-sm);
+    font-size: 0.8125rem;
+  }
+
+  .avatar {
+    width: 28px;
+    height: 28px;
+    font-size: 0.75rem;
+  }
+}

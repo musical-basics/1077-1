@@ -4,6 +4,21 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth } from "@/lib/guards";
 import { requireAdmin } from "@/lib/guards";
 
+// ── Types ────────────────────────────────────────────────
+
+export type PayType = "hourly" | "task" | "hybrid";
+
+export interface PayProfile {
+  id: string;
+  userId: string;
+  payType: string;
+  hourlyRate: number | null;
+  airbnbClean: number | null;
+  kitchenClean: number | null;
+  dogWalk: number | null;
+  weeklyStipend: number | null;
+}
+
 // ── User-facing ──────────────────────────────────────────
 
 /**
@@ -11,7 +26,7 @@ import { requireAdmin } from "@/lib/guards";
  * The frontend uses this to decide whether to render
  * a time-clock UI or a task-checkbox UI.
  */
-export async function getMyPayProfile() {
+export async function getMyPayProfile(): Promise<PayProfile | null> {
   const user = await requireAuth();
 
   return prisma.payProfile.findUnique({
@@ -24,7 +39,9 @@ export async function getMyPayProfile() {
 /**
  * Fetch any user's PayProfile by their internal ID.
  */
-export async function getPayProfileByUserId(userId: string) {
+export async function getPayProfileByUserId(
+  userId: string
+): Promise<PayProfile | null> {
   await requireAdmin();
 
   return prisma.payProfile.findUnique({

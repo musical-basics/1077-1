@@ -4,21 +4,39 @@ import { prisma } from "@/lib/prisma";
 import { requireAuth, requireAdmin } from "@/lib/guards";
 import { calculateTotalPayout } from "@/lib/calculate-payout";
 
+// ── Types ────────────────────────────────────────────────
+
+export interface WorkLog {
+  id: string;
+  userId: string;
+  weekEnding: Date;
+  hoursLogged: number | null;
+  airbnbCleans: number | null;
+  kitchenCleans: number | null;
+  dogWalks: number | null;
+  expensesTotal: number | null;
+  receiptUrls: string[];
+  totalPayout: number;
+  submittedAt: Date;
+}
+
 // ── User-facing ──────────────────────────────────────────
 
 /**
  * Submit a new WorkLog entry. The totalPayout is computed
  * automatically from the user's PayProfile.
+ *
+ * Returns { success, payout } for the frontend form.
  */
 export async function submitWorkLog(data: {
-  weekEnding: Date;
+  weekEnding: Date | string;
   hoursLogged?: number | null;
   airbnbCleans?: number | null;
   kitchenCleans?: number | null;
   dogWalks?: number | null;
   expensesTotal?: number | null;
   receiptUrls?: string[];
-}) {
+}): Promise<{ success: boolean; payout: number }> {
   const user = await requireAuth();
 
   // Fetch the user's PayProfile to compute payout
@@ -34,10 +52,15 @@ export async function submitWorkLog(data: {
 
   const totalPayout = calculateTotalPayout(data, payProfile);
 
-  return prisma.workLog.create({
+  const weekDate =
+    typeof data.weekEnding === "string"
+      ? new Date(data.weekEnding)
+      : data.weekEnding;
+
+  const workLog = await prisma.workLog.create({
     data: {
       userId: user.id,
-      weekEnding: data.weekEnding,
+      weekEnding: weekDate,
       hoursLogged: data.hoursLogged,
       airbnbCleans: data.airbnbCleans,
       kitchenCleans: data.kitchenCleans,
@@ -47,19 +70,28 @@ export async function submitWorkLog(data: {
       totalPayout,
     },
   });
+
+  return { success: true, payout: workLog.totalPayout };
 }
 
 /**
  * Fetch the logged-in user's WorkLogs, optionally filtered
  * by the week-ending date.
  */
-export async function getMyWorkLogs(weekEnding?: Date) {
+export async function getMyWorkLogs(weekEnding?: Date | string) {
   const user = await requireAuth();
+
+  const weekDate =
+    weekEnding == null
+      ? undefined
+      : typeof weekEnding === "string"
+        ? new Date(weekEnding)
+        : weekEnding;
 
   return prisma.workLog.findMany({
     where: {
       userId: user.id,
-      ...(weekEnding ? { weekEnding } : {}),
+      ...(weekDate ? { weekEnding: weekDate } : {}),
     },
     orderBy: { submittedAt: "desc" },
   });
@@ -72,14 +104,21 @@ export async function getMyWorkLogs(weekEnding?: Date) {
  */
 export async function getWorkLogsByUserId(
   userId: string,
-  weekEnding?: Date
+  weekEnding?: Date | string
 ) {
   await requireAdmin();
+
+  const weekDate =
+    weekEnding == null
+      ? undefined
+      : typeof weekEnding === "string"
+        ? new Date(weekEnding)
+        : weekEnding;
 
   return prisma.workLog.findMany({
     where: {
       userId,
-      ...(weekEnding ? { weekEnding } : {}),
+      ...(weekDate ? { weekEnding: weekDate } : {}),
     },
     orderBy: { submittedAt: "desc" },
   });

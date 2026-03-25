@@ -1,0 +1,131 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.backLink {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--fg-muted);
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: color var(--transition-default);
+}
+
+.backLink:hover {
+  color: var(--fg-primary);
+}
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: white;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--fg-primary);
+  margin: 0;
+}
+
+.email {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+/* Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: var(--space-lg);
+}
+
+/* Work Logs List */
+.logsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.logItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-md);
+  gap: var(--space-md);
+}
+
+.logDate {
+  font-size: 0.875rem;
+  color: var(--fg-primary);
+  font-weight: 500;
+}
+
+.logDetails {
+  display: flex;
+  gap: var(--space-md);
+  font-size: 0.8125rem;
+  color: var(--fg-muted);
+  flex: 1;
+}
+
+.logPayout {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--success);
+}
+
+.noLogs {
+  color: var(--fg-muted);
+  text-align: center;
+  padding: var(--space-lg);
+  margin: 0;
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .userInfo {
+    flex-wrap: wrap;
+  }
+
+  .avatar {
+    width: 48px;
+    height: 48px;
+    font-size: 1rem;
+  }
+
+  .title {
+    font-size: 1.25rem;
+  }
+}

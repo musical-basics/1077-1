@@ -1,0 +1,199 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.taskGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.expensesSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.receipts {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.receiptsLabel {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg-primary);
+}
+
+.receiptRow {
+  display: flex;
+  gap: var(--space-sm);
+  align-items: flex-start;
+}
+
+.receiptRow > div {
+  flex: 1;
+}
+
+.removeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--fg-muted);
+  cursor: pointer;
+  transition: all var(--transition-default);
+  flex-shrink: 0;
+}
+
+.removeButton:hover {
+  background: var(--error-bg);
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.addButton {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: transparent;
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--fg-secondary);
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-default);
+  width: fit-content;
+}
+
+.addButton:hover {
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+}
+
+/* Estimate */
+.estimate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.estimateRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.estimateLabel {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--fg-primary);
+}
+
+.estimateValue {
+  font-family: var(--font-mono);
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--success);
+}
+
+.estimateNote {
+  font-size: 0.8125rem;
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+/* Error */
+.error {
+  padding: var(--space-md);
+  background: var(--error-bg);
+  border: 1px solid var(--error);
+  border-radius: var(--radius-md);
+  color: var(--error);
+  font-size: 0.9375rem;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Success */
+.success {
+  text-align: center;
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.successIcon {
+  color: var(--success);
+  margin-bottom: var(--space-sm);
+}
+
+.success h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--fg-primary);
+  margin: 0;
+}
+
+.success p {
+  color: var(--fg-muted);
+  margin: 0;
+}
+
+.successPayout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-lg);
+  background: var(--success-bg);
+  border-radius: var(--radius-md);
+  margin: var(--space-md) 0;
+}
+
+.successPayout span:first-child {
+  font-size: 0.875rem;
+  color: var(--fg-secondary);
+}
+
+.payoutAmount {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--success);
+}
+
+.successActions {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .taskGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .successActions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .successActions button {
+    width: 100%;
+  }
+}
