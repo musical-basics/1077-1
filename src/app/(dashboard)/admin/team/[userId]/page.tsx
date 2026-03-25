@@ -1,6 +1,6 @@
 import { getUserById } from '@/actions/admin'
 import { getPayProfileByUserId } from '@/actions/pay-profile'
-import { getWorkLogsByUserId } from '@/actions/work-log'
+import { getWorkLogsByUserId, type WorkLog } from '@/actions/work-log'
 import { notFound } from 'next/navigation'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/card'
 import { Badge } from '@/components/badge'
@@ -61,7 +61,7 @@ export default async function UserDetailPage({ params }: UserDetailPageProps) {
           <CardContent>
             {workLogs.length > 0 ? (
               <div className={styles.logsList}>
-                {workLogs.slice(0, 5).map(log => (
+                {workLogs.slice(0, 5).map((log: WorkLog) => (
                   <div key={log.id} className={styles.logItem}>
                     <div className={styles.logDate}>
                       {new Date(log.weekEnding).toLocaleDateString('en-US', {
