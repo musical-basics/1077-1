@@ -130,3 +130,33 @@ export async function getWeeklyPayrollSummary(
 
   return Array.from(userMap.values());
 }
+
+/**
+ * Pre-register a new team member by creating their User row.
+ * When they sign up via Clerk, JIT provisioning will match them by email.
+ */
+export async function addTeamMember(data: {
+  email: string;
+  name: string | null;
+  role: string;
+}) {
+  await requireAdmin();
+
+  // Check for duplicate email
+  const existing = await prisma.user.findUnique({
+    where: { email: data.email },
+  });
+
+  if (existing) {
+    throw new Error(`A team member with email ${data.email} already exists.`);
+  }
+
+  return prisma.user.create({
+    data: {
+      clerkUserId: `pending_${Date.now()}`,
+      email: data.email,
+      name: data.name,
+      role: data.role,
+    },
+  });
+}

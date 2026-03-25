@@ -6,22 +6,35 @@ import { prisma } from "@/lib/prisma";
 /**
  * Resolves the current Clerk session to the corresponding Prisma User row.
  * Returns `null` if there is no active session.
- * Throws if the Clerk user exists but has no matching DB row (webhook may not have fired yet).
+ * Auto-creates the DB row if the Clerk user exists but hasn't been synced yet
+ * (JIT provisioning — useful for local dev when the webhook isn't configured).
  */
 export async function getCurrentUser() {
   const clerk = await currentUser();
   if (!clerk) return null;
 
-  const user = await prisma.user.findUnique({
+  let user = await prisma.user.findUnique({
     where: { clerkUserId: clerk.id },
     include: { payProfile: true },
   });
 
   if (!user) {
-    throw new Error(
-      `No database row found for Clerk user ${clerk.id}. ` +
-        `The webhook may not have fired yet.`
-    );
+    const email =
+      clerk.emailAddresses?.[0]?.emailAddress ?? `${clerk.id}@placeholder`;
+    const name =
+      [clerk.firstName, clerk.lastName].filter(Boolean).join(" ") || null;
+
+    user = await prisma.user.create({
+      data: {
+        clerkUserId: clerk.id,
+        email,
+        name,
+        role: "assistant",
+      },
+      include: { payProfile: true },
+    });
+
+    console.log(`✅ JIT-provisioned DB user for Clerk user ${clerk.id}`);
   }
 
   return user;

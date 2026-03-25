@@ -2,6 +2,7 @@ import { listAllUsers } from '@/actions/admin'
 import { Card } from '@/components/card'
 import { Badge } from '@/components/badge'
 import Link from 'next/link'
+import { AddMemberButton } from './team-header'
 import styles from './page.module.css'
 
 export default async function TeamPage() {
@@ -14,6 +15,7 @@ export default async function TeamPage() {
           <h1 className={styles.title}>Team Management</h1>
           <p className={styles.subtitle}>Manage team members and pay profiles</p>
         </div>
+        <AddMemberButton />
       </header>
 
       <Card>
