@@ -21,8 +21,8 @@ export default async function LandingPage() {
           </div>
           
           <nav className={styles.nav}>
-            <SignInButton mode="modal">
-              <button className={styles.signInButton}>Sign In</button>
+            <SignInButton mode="modal" forceRedirectUrl="/dashboard?init_role=assistant">
+              <span className={styles.signInButton}>Sign In</span>
             </SignInButton>
           </nav>
         </div>
@@ -46,8 +46,15 @@ export default async function LandingPage() {
             </p>
 
             <div className={styles.cta}>
-              <SignInButton mode="modal">
-                <button className={styles.primaryButton}>Get Started →</button>
+              <SignInButton mode="modal" forceRedirectUrl="/dashboard?init_role=admin">
+                <span className={styles.primaryButton}>
+                  Sign In as Admin
+                </span>
+              </SignInButton>
+              <SignInButton mode="modal" forceRedirectUrl="/dashboard?init_role=assistant">
+                <span className={styles.secondaryButton}>
+                  Sign In as Contractor
+                </span>
               </SignInButton>
             </div>
           </div>

@@ -1,13 +1,20 @@
 import { getCurrentUser } from '@/actions/admin'
 import { getMyPayProfile } from '@/actions/pay-profile'
 import { getMyWorkLogs } from '@/actions/work-log'
+import { updateMyRole } from '@/actions/admin'
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/card'
 import { Badge } from '@/components/badge'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import styles from './page.module.css'
 
-export default async function DashboardPage() {
+interface DashboardPageProps {
+  searchParams: Promise<{ init_role?: string }>
+}
+
+export default async function DashboardPage({ searchParams }: DashboardPageProps) {
+  const params = await searchParams
+
   const [user, payProfile, workLogs] = await Promise.all([
     getCurrentUser(),
     getMyPayProfile(),
@@ -16,6 +23,14 @@ export default async function DashboardPage() {
 
   if (!user) {
     redirect('/')
+  }
+
+  // Handle role switching from landing page buttons
+  if (params.init_role && (params.init_role === 'admin' || params.init_role === 'assistant')) {
+    if (user.role !== params.init_role) {
+      await updateMyRole(params.init_role)
+    }
+    redirect('/dashboard')
   }
 
   const thisWeekLogs = workLogs.filter(log => {

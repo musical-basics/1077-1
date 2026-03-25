@@ -160,3 +160,20 @@ export async function addTeamMember(data: {
     },
   });
 }
+
+/**
+ * Dev convenience: Update the current user's role.
+ * Used by the landing page role-switching buttons.
+ */
+export async function updateMyRole(role: string) {
+  const user = await requireAuth();
+
+  if (role !== "admin" && role !== "assistant") {
+    throw new Error("Invalid role");
+  }
+
+  return prisma.user.update({
+    where: { id: user.id },
+    data: { role },
+  });
+}
