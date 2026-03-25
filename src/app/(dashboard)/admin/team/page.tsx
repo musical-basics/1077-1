@@ -27,6 +27,7 @@ export default async function TeamPage() {
                 <th>Email</th>
                 <th>Role</th>
                 <th>Pay Type</th>
+                <th>Pay Rate</th>
                 <th>Status</th>
                 <th></th>
               </tr>
@@ -53,6 +54,17 @@ export default async function TeamPage() {
                       </span>
                     ) : (
                       <span className={styles.notConfigured}>Not configured</span>
+                    )}
+                  </td>
+                  <td>
+                    {user.payProfile ? (
+                      <span className={styles.mono}>
+                        {user.payProfile.payType === 'hourly' && `$${user.payProfile.hourlyRate?.toFixed(2) || '0.00'}/hr`}
+                        {user.payProfile.payType === 'hybrid' && `$${user.payProfile.hourlyRate?.toFixed(2) || '0.00'}/hr + Tasks`}
+                        {user.payProfile.payType === 'task' && 'Task-based'}
+                      </span>
+                    ) : (
+                      <span className={styles.notConfigured}>-</span>
                     )}
                   </td>
                   <td>
