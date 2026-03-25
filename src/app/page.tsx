@@ -1,6 +1,6 @@
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { SignInButton } from '@clerk/nextjs'
+import Link from 'next/link'
 import styles from './page.module.css'
 
 export default async function LandingPage() {
@@ -21,9 +21,9 @@ export default async function LandingPage() {
           </div>
           
           <nav className={styles.nav}>
-            <SignInButton mode="modal" forceRedirectUrl="/dashboard?init_role=assistant">
-              <span className={styles.signInButton}>Sign In</span>
-            </SignInButton>
+            <Link href="/dashboard" className={styles.signInButton}>
+              Sign In
+            </Link>
           </nav>
         </div>
       </header>
@@ -46,16 +46,12 @@ export default async function LandingPage() {
             </p>
 
             <div className={styles.cta}>
-              <SignInButton mode="modal" forceRedirectUrl="/dashboard?init_role=admin">
-                <span className={styles.primaryButton}>
-                  Sign In as Admin
-                </span>
-              </SignInButton>
-              <SignInButton mode="modal" forceRedirectUrl="/dashboard?init_role=assistant">
-                <span className={styles.secondaryButton}>
-                  Sign In as Contractor
-                </span>
-              </SignInButton>
+              <Link href="/dashboard?init_role=admin" className={styles.primaryButton}>
+                Sign In as Admin
+              </Link>
+              <Link href="/dashboard?init_role=assistant" className={styles.secondaryButton}>
+                Sign In as Contractor
+              </Link>
             </div>
           </div>
 

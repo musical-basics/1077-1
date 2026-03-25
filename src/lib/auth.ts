@@ -6,13 +6,14 @@ import { prisma } from "@/lib/prisma";
 /**
  * Resolves the current Clerk session to the corresponding Prisma User row.
  * Returns `null` if there is no active session.
- * Auto-creates the DB row if the Clerk user exists but hasn't been synced yet
+ * Auto-creates or links the DB row if the Clerk user exists but hasn't been synced yet
  * (JIT provisioning — useful for local dev when the webhook isn't configured).
  */
 export async function getCurrentUser() {
   const clerk = await currentUser();
   if (!clerk) return null;
 
+  // 1. Try finding by Clerk ID first (normal flow)
   let user = await prisma.user.findUnique({
     where: { clerkUserId: clerk.id },
     include: { payProfile: true },
@@ -24,17 +25,34 @@ export async function getCurrentUser() {
     const name =
       [clerk.firstName, clerk.lastName].filter(Boolean).join(" ") || null;
 
-    user = await prisma.user.create({
-      data: {
-        clerkUserId: clerk.id,
-        email,
-        name,
-        role: "assistant",
-      },
-      include: { payProfile: true },
+    // 2. Check if the user was pre-registered by an admin (via addTeamMember)
+    const existingByEmail = await prisma.user.findUnique({
+      where: { email },
     });
 
-    console.log(`✅ JIT-provisioned DB user for Clerk user ${clerk.id}`);
+    if (existingByEmail) {
+      // Link the pre-registered user to this Clerk account
+      user = await prisma.user.update({
+        where: { id: existingByEmail.id },
+        data: { clerkUserId: clerk.id, name: name || existingByEmail.name },
+        include: { payProfile: true },
+      });
+      console.log(
+        `✅ Linked pre-registered user ${email} to Clerk user ${clerk.id}`
+      );
+    } else {
+      // 3. Create a brand new user
+      user = await prisma.user.create({
+        data: {
+          clerkUserId: clerk.id,
+          email,
+          name,
+          role: "assistant",
+        },
+        include: { payProfile: true },
+      });
+      console.log(`✅ JIT-provisioned DB user for Clerk user ${clerk.id}`);
+    }
   }
 
   return user;
