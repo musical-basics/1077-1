@@ -166,172 +166,193 @@ export function WorkLogForm({ payProfile }: WorkLogFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className={styles.form}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Week Information</CardTitle>
-          <CardDescription>Select the week ending date for this log</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Input
-            type="date"
-            label="Week Ending (Sunday)"
-            value={formData.weekEnding}
-            onChange={e => handleChange('weekEnding', e.target.value)}
-            required
-          />
-        </CardContent>
-      </Card>
+    <form onSubmit={handleSubmit} className={styles.formLayout}>
+      <div className={styles.formContent}>
+        <div className={styles.fadeUpSection} style={{ animationDelay: '0ms' }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Week Information</CardTitle>
+              <CardDescription>Select the week ending date for this log</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Input
+                type="date"
+                label="Week Ending (Sunday)"
+                value={formData.weekEnding}
+                onChange={e => handleChange('weekEnding', e.target.value)}
+                required
+              />
+            </CardContent>
+          </Card>
+        </div>
 
-      {showHourly && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Hours Logged</CardTitle>
-            <CardDescription>
-              Enter total hours worked at ${payProfile.hourlyRate?.toFixed(2)}/hr
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Input
-              type="number"
-              label="Hours"
-              value={formData.hoursLogged}
-              onChange={e => handleChange('hoursLogged', e.target.value)}
-              placeholder="0"
-              min="0"
-              step="0.5"
-            />
-          </CardContent>
-        </Card>
-      )}
-
-      {showTasks && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Task Counts</CardTitle>
-            <CardDescription>Enter the number of tasks completed</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className={styles.taskGrid}>
-              {payProfile.airbnbClean && (
+        {showHourly && (
+          <div className={styles.fadeUpSection} style={{ animationDelay: '50ms' }}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Hours Logged</CardTitle>
+                <CardDescription>
+                  Enter total hours worked at ${payProfile.hourlyRate?.toFixed(2)}/hr
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
                 <Input
                   type="number"
-                  label={`Airbnb Cleans ($${payProfile.airbnbClean.toFixed(2)} each)`}
-                  value={formData.airbnbCleans}
-                  onChange={e => handleChange('airbnbCleans', e.target.value)}
+                  label="Hours"
+                  value={formData.hoursLogged}
+                  onChange={e => handleChange('hoursLogged', e.target.value)}
                   placeholder="0"
                   min="0"
+                  step="0.5"
                 />
-              )}
-              {payProfile.kitchenClean && (
-                <Input
-                  type="number"
-                  label={`Kitchen Cleans ($${payProfile.kitchenClean.toFixed(2)} each)`}
-                  value={formData.kitchenCleans}
-                  onChange={e => handleChange('kitchenCleans', e.target.value)}
-                  placeholder="0"
-                  min="0"
-                />
-              )}
-              {payProfile.dogWalk && (
-                <Input
-                  type="number"
-                  label={`Dog Walks ($${payProfile.dogWalk.toFixed(2)} each)`}
-                  value={formData.dogWalks}
-                  onChange={e => handleChange('dogWalks', e.target.value)}
-                  placeholder="0"
-                  min="0"
-                />
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Expenses</CardTitle>
-          <CardDescription>Add any work-related expenses for reimbursement</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className={styles.expensesSection}>
-            <Input
-              type="number"
-              label="Total Expenses ($)"
-              value={formData.expensesTotal}
-              onChange={e => handleChange('expensesTotal', e.target.value)}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-            />
-
-            <div className={styles.receipts}>
-              <label className={styles.receiptsLabel}>Receipt URLs (optional)</label>
-              {formData.receiptUrls.map((url, index) => (
-                <div key={index} className={styles.receiptRow}>
-                  <Input
-                    type="url"
-                    value={url}
-                    onChange={e => handleReceiptChange(index, e.target.value)}
-                    placeholder="https://..."
-                  />
-                  {formData.receiptUrls.length > 1 && (
-                    <button
-                      type="button"
-                      className={styles.removeButton}
-                      onClick={() => removeReceiptUrl(index)}
-                      aria-label="Remove receipt URL"
-                    >
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
+        {showTasks && (
+          <div className={styles.fadeUpSection} style={{ animationDelay: '100ms' }}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Task Counts</CardTitle>
+                <CardDescription>Enter the number of tasks completed</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className={styles.taskGrid}>
+                  {payProfile.airbnbClean && (
+                    <Input
+                      type="number"
+                      label={`Airbnb Cleans ($${payProfile.airbnbClean.toFixed(2)} each)`}
+                      value={formData.airbnbCleans}
+                      onChange={e => handleChange('airbnbCleans', e.target.value)}
+                      placeholder="0"
+                      min="0"
+                    />
+                  )}
+                  {payProfile.kitchenClean && (
+                    <Input
+                      type="number"
+                      label={`Kitchen Cleans ($${payProfile.kitchenClean.toFixed(2)} each)`}
+                      value={formData.kitchenCleans}
+                      onChange={e => handleChange('kitchenCleans', e.target.value)}
+                      placeholder="0"
+                      min="0"
+                    />
+                  )}
+                  {payProfile.dogWalk && (
+                    <Input
+                      type="number"
+                      label={`Dog Walks ($${payProfile.dogWalk.toFixed(2)} each)`}
+                      value={formData.dogWalks}
+                      onChange={e => handleChange('dogWalks', e.target.value)}
+                      placeholder="0"
+                      min="0"
+                    />
                   )}
                 </div>
-              ))}
-              <button
-                type="button"
-                className={styles.addButton}
-                onClick={addReceiptUrl}
-              >
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 5v14M5 12h14" />
-                </svg>
-                Add Receipt URL
-              </button>
-            </div>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
+        )}
 
-      {/* Payout Estimate */}
-      <Card variant="glass">
-        <CardContent>
-          <div className={styles.estimate}>
-            <div className={styles.estimateRow}>
-              <span className={styles.estimateLabel}>Estimated Payout</span>
-              <span className={styles.estimateValue}>${estimatedPayout.toFixed(2)}</span>
-            </div>
-            {payProfile.weeklyStipend && (
-              <p className={styles.estimateNote}>
-                Includes ${payProfile.weeklyStipend.toFixed(2)} weekly stipend
-              </p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+        <div className={styles.fadeUpSection} style={{ animationDelay: '150ms' }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Expenses</CardTitle>
+              <CardDescription>Add any work-related expenses for reimbursement</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className={styles.expensesSection}>
+                <Input
+                  type="number"
+                  label="Total Expenses ($)"
+                  value={formData.expensesTotal}
+                  onChange={e => handleChange('expensesTotal', e.target.value)}
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                />
 
-      {error && (
-        <div className={styles.error}>
-          {error}
+                <div className={styles.receipts}>
+                  <label className={styles.receiptsLabel}>Receipt URLs (optional)</label>
+                  {formData.receiptUrls.map((url, index) => (
+                    <div key={index} className={styles.receiptRow}>
+                      <Input
+                        type="url"
+                        value={url}
+                        onChange={e => handleReceiptChange(index, e.target.value)}
+                        placeholder="https://..."
+                      />
+                      {formData.receiptUrls.length > 1 && (
+                        <button
+                          type="button"
+                          className={styles.removeButton}
+                          onClick={() => removeReceiptUrl(index)}
+                          aria-label="Remove receipt URL"
+                        >
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    className={styles.addButton}
+                    onClick={addReceiptUrl}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    Add Receipt URL
+                  </button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      )}
+      </div>
 
-      <div className={styles.actions}>
-        <Button type="submit" isLoading={isSubmitting} size="lg">
-          Submit Work Log
-        </Button>
+      {/* Sticky Estimate Panel */}
+      <div className={styles.stickySidebar}>
+        <div className={styles.fadeUpSection} style={{ animationDelay: '200ms' }}>
+          <Card variant="glass" className={styles.estimateCard}>
+            <CardContent>
+              <div className={styles.estimate}>
+                <div className={styles.estimateIconWrapper}>
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={styles.estimateIcon}>
+                    <line x1="12" y1="1" x2="12" y2="23" />
+                    <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                  </svg>
+                </div>
+                <div className={styles.estimateDetails}>
+                  <span className={styles.estimateLabel}>Estimated Payout</span>
+                  <div className={styles.estimateValueWrapper}>
+                    <span className={styles.currencySymbol}>$</span>
+                    <span className={styles.estimateValue}>{estimatedPayout.toFixed(2)}</span>
+                  </div>
+                </div>
+                {payProfile.weeklyStipend ? (
+                  <p className={styles.estimateNote}>
+                    Includes ${payProfile.weeklyStipend.toFixed(2)} weekly stipend
+                  </p>
+                ) : null}
+              </div>
+
+              {error && (
+                <div className={styles.error}>
+                  {error}
+                </div>
+              )}
+
+              <Button type="submit" isLoading={isSubmitting} size="lg" className={styles.submitBtn}>
+                Submit Work Log
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </form>
   )

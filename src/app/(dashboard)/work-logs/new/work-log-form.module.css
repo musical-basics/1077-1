@@ -1,9 +1,59 @@
-.form {
+/* Layout */
+.formLayout {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
+  position: relative;
 }
 
+@media (min-width: 1024px) {
+  .formLayout {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.formContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  min-width: 0; /* Prevent flex overflow */
+}
+
+/* Sticky Sidebar */
+.stickySidebar {
+  position: sticky;
+  top: var(--space-xl);
+  width: 100%;
+  z-index: 10;
+}
+
+@media (min-width: 1024px) {
+  .stickySidebar {
+    width: 380px;
+    flex-shrink: 0;
+  }
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeUpSection {
+  opacity: 0;
+  animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Form Sections */
 .taskGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -13,25 +63,28 @@
 .expensesSection {
   display: flex;
   flex-direction: column;
-  gap: var(--space-lg);
+  gap: var(--space-xl);
 }
 
 .receipts {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: var(--space-md);
 }
 
 .receiptsLabel {
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--fg-primary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
 .receiptRow {
   display: flex;
   gap: var(--space-sm);
-  align-items: flex-start;
+  align-items: center;
 }
 
 .receiptRow > div {
@@ -42,9 +95,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  background: transparent;
+  width: 44px;
+  height: 44px;
+  background: var(--bg-elevated);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   color: var(--fg-muted);
@@ -62,13 +115,14 @@
 .addButton {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
   background: transparent;
   border: 1px dashed var(--border-default);
   border-radius: var(--radius-md);
   color: var(--fg-secondary);
-  padding: var(--space-sm) var(--space-md);
+  padding: 12px var(--space-md);
   font-size: 0.875rem;
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-default);
   width: fit-content;
@@ -77,38 +131,110 @@
 .addButton:hover {
   border-color: var(--accent-primary);
   color: var(--accent-primary);
+  background: rgba(59, 130, 246, 0.05); /* very subtle blue */
 }
 
-/* Estimate */
+/* Payout Estimate Card */
+.estimateCard {
+  background: linear-gradient(180deg, rgba(23, 23, 23, 0.8) 0%, rgba(10, 10, 10, 0.9) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Subtle glow behind the card */
+.estimateCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-primary), transparent);
+  opacity: 0.5;
+}
+
 .estimate {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
+  gap: var(--space-sm);
+  margin-bottom: var(--space-xl);
 }
 
-.estimateRow {
+.estimateIconWrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  background: rgba(59, 130, 246, 0.1);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-xs);
+}
+
+.estimateIcon {
+  color: var(--accent-primary);
+}
+
+.estimateDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .estimateLabel {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 500;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.estimateValueWrapper {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
   color: var(--fg-primary);
+}
+
+.currencySymbol {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--success);
 }
 
 .estimateValue {
   font-family: var(--font-mono);
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--success);
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .estimateNote {
   font-size: 0.8125rem;
-  color: var(--fg-muted);
-  margin: 0;
+  color: var(--fg-secondary);
+  margin: var(--space-sm) 0 0 0;
+  padding-top: var(--space-sm);
+  border-top: 1px dashed var(--border-subtle);
+}
+
+.submitBtn {
+  width: 100%;
+  font-size: 1.0625rem;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  border: none;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+}
+
+.submitBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
 }
 
 /* Error */
@@ -118,19 +244,21 @@
   border: 1px solid var(--error);
   border-radius: var(--radius-md);
   color: var(--error);
-  font-size: 0.9375rem;
-}
-
-/* Actions */
-.actions {
+  font-size: 0.875rem;
+  margin-bottom: var(--space-md);
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-sm);
 }
 
-/* Success */
+.error::before {
+  content: '⚠️';
+}
+
+/* Success State */
 .success {
   text-align: center;
-  padding: var(--space-xl);
+  padding: var(--space-2xl) var(--space-xl);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,51 +266,75 @@
 }
 
 .successIcon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.1);
   color: var(--success);
-  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-md);
+  animation: scaleIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes scaleIn {
+  0% { transform: scale(0); }
+  100% { transform: scale(1); }
 }
 
 .success h3 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: 600;
   color: var(--fg-primary);
   margin: 0;
+  letter-spacing: -0.01em;
 }
 
 .success p {
-  color: var(--fg-muted);
+  color: var(--fg-secondary);
+  font-size: 1.0625rem;
   margin: 0;
+  max-width: 400px;
 }
 
 .successPayout {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--space-xs);
-  padding: var(--space-lg);
-  background: var(--success-bg);
-  border-radius: var(--radius-md);
-  margin: var(--space-md) 0;
+  padding: var(--space-xl);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: var(--radius-lg);
+  margin: var(--space-lg) 0;
+  width: 100%;
+  max-width: 320px;
 }
 
 .successPayout span:first-child {
   font-size: 0.875rem;
-  color: var(--fg-secondary);
+  font-weight: 500;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .payoutAmount {
   font-family: var(--font-mono);
-  font-size: 2rem;
+  font-size: 2.5rem;
   font-weight: 700;
   color: var(--success);
+  letter-spacing: -0.02em;
 }
 
 .successActions {
   display: flex;
   gap: var(--space-md);
-  margin-top: var(--space-md);
+  margin-top: var(--space-lg);
 }
 
-/* Mobile */
+/* Mobile Adjustments */
 @media (max-width: 768px) {
   .taskGrid {
     grid-template-columns: 1fr;
