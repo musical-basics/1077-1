@@ -1,4 +1,7 @@
 import { listAllUsers } from '@/actions/admin'
+import type { User, PayProfile } from '@prisma/client'
+
+type UserWithProfile = User & { payProfile: PayProfile | null }
 import { Card } from '@/components/card'
 import { Badge } from '@/components/badge'
 import Link from 'next/link'
@@ -33,7 +36,7 @@ export default async function TeamPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map(user => (
+              {users.map((user: UserWithProfile) => (
                 <tr key={user.id}>
                   <td className={styles.name}>
                     <div className={styles.avatar}>
