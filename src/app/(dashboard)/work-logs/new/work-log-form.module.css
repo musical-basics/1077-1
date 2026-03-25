@@ -53,11 +53,85 @@
   animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-/* Form Sections */
 .taskGrid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: var(--space-md);
+}
+
+/* Calendar Grid */
+.calendarWrapper {
+  overflow-x: auto;
+  margin: 0 calc(-1 * var(--space-xl));
+  padding: 0 var(--space-xl);
+}
+
+.calendarTable {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+.calendarTable th {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--fg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.calendarTable td {
+  padding: var(--space-sm) var(--space-md);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.calendarTable tr:last-child td {
+  border-bottom: none;
+}
+
+.gridInput {
+  width: 100%;
+  min-width: 70px;
+  max-width: 100px;
+  padding: var(--space-sm);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--fg-primary);
+  font-size: 0.875rem;
+  transition: all 0.2s;
+}
+
+.gridInput:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+}
+
+.dayLabel {
+  font-weight: 500;
+  color: var(--fg-primary);
+  white-space: nowrap;
+}
+
+.dayDate {
+  font-size: 0.75rem;
+  color: var(--fg-secondary);
+  margin-left: var(--space-xs);
+}
+
+.totalRow td {
+  border-top: 2px solid var(--border-primary);
+  font-weight: 600;
+  color: var(--fg-primary);
+  background: var(--bg-subtle);
+}
+
+.totalValue {
+  padding-left: var(--space-sm);
 }
 
 .expensesSection {

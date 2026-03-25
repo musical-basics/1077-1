@@ -9,6 +9,20 @@ import { submitWorkLog } from '@/actions/work-log'
 import type { PayProfile } from '@/actions/pay-profile'
 import styles from './work-log-form.module.css'
 
+type DailyEntry = { hours: string; airbnb: string; kitchen: string; dog: string };
+
+const createEmptyWeek = (): Record<string, DailyEntry> => {
+  return {
+    Mon: { hours: '', airbnb: '', kitchen: '', dog: '' },
+    Tue: { hours: '', airbnb: '', kitchen: '', dog: '' },
+    Wed: { hours: '', airbnb: '', kitchen: '', dog: '' },
+    Thu: { hours: '', airbnb: '', kitchen: '', dog: '' },
+    Fri: { hours: '', airbnb: '', kitchen: '', dog: '' },
+    Sat: { hours: '', airbnb: '', kitchen: '', dog: '' },
+    Sun: { hours: '', airbnb: '', kitchen: '', dog: '' },
+  }
+}
+
 interface WorkLogFormProps {
   payProfile: PayProfile
 }
@@ -31,30 +45,38 @@ export function WorkLogForm({ payProfile }: WorkLogFormProps) {
 
   const [formData, setFormData] = useState({
     weekEnding: getLastSunday(),
-    hoursLogged: '',
-    airbnbCleans: '',
-    kitchenCleans: '',
-    dogWalks: '',
+    dailyData: createEmptyWeek(),
     expensesTotal: '',
     receiptUrls: [''],
   })
+
+  const sums = useMemo(() => {
+    let hours = 0, airbnb = 0, kitchen = 0, dog = 0
+    Object.values(formData.dailyData).forEach(day => {
+      hours += parseFloat(day.hours) || 0
+      airbnb += parseInt(day.airbnb) || 0
+      kitchen += parseInt(day.kitchen) || 0
+      dog += parseInt(day.dog) || 0
+    })
+    return { hours, airbnb, kitchen, dog }
+  }, [formData.dailyData])
 
   // Calculate live payout estimate
   const estimatedPayout = useMemo(() => {
     let total = 0
 
     if (payProfile.hourlyRate) {
-      total += (parseFloat(formData.hoursLogged) || 0) * payProfile.hourlyRate
+      total += sums.hours * payProfile.hourlyRate
     }
 
     if (payProfile.airbnbClean) {
-      total += (parseInt(formData.airbnbCleans) || 0) * payProfile.airbnbClean
+      total += sums.airbnb * payProfile.airbnbClean
     }
     if (payProfile.kitchenClean) {
-      total += (parseInt(formData.kitchenCleans) || 0) * payProfile.kitchenClean
+      total += sums.kitchen * payProfile.kitchenClean
     }
     if (payProfile.dogWalk) {
-      total += (parseInt(formData.dogWalks) || 0) * payProfile.dogWalk
+      total += sums.dog * payProfile.dogWalk
     }
 
     total += parseFloat(formData.expensesTotal) || 0
@@ -64,10 +86,23 @@ export function WorkLogForm({ payProfile }: WorkLogFormProps) {
     }
 
     return total
-  }, [formData, payProfile])
+  }, [sums, formData.expensesTotal, payProfile])
 
   const handleChange = useCallback((field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+  }, [])
+
+  const handleDailyChange = useCallback((dayKey: string, field: keyof DailyEntry, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      dailyData: {
+        ...prev.dailyData,
+        [dayKey]: {
+          ...prev.dailyData[dayKey],
+          [field]: value
+        }
+      }
+    }))
   }, [])
 
   const handleReceiptChange = useCallback((index: number, value: string) => {
@@ -100,10 +135,10 @@ export function WorkLogForm({ payProfile }: WorkLogFormProps) {
     try {
       const result = await submitWorkLog({
         weekEnding: formData.weekEnding,
-        hoursLogged: formData.hoursLogged ? parseFloat(formData.hoursLogged) : undefined,
-        airbnbCleans: formData.airbnbCleans ? parseInt(formData.airbnbCleans) : undefined,
-        kitchenCleans: formData.kitchenCleans ? parseInt(formData.kitchenCleans) : undefined,
-        dogWalks: formData.dogWalks ? parseInt(formData.dogWalks) : undefined,
+        hoursLogged: sums.hours > 0 ? sums.hours : undefined,
+        airbnbCleans: sums.airbnb > 0 ? sums.airbnb : undefined,
+        kitchenCleans: sums.kitchen > 0 ? sums.kitchen : undefined,
+        dogWalks: sums.dog > 0 ? sums.dog : undefined,
         expensesTotal: formData.expensesTotal ? parseFloat(formData.expensesTotal) : undefined,
         receiptUrls: formData.receiptUrls.filter(url => url.trim() !== ''),
       })
@@ -143,10 +178,7 @@ export function WorkLogForm({ payProfile }: WorkLogFormProps) {
                 setSuccess(null)
                 setFormData({
                   weekEnding: getLastSunday(),
-                  hoursLogged: '',
-                  airbnbCleans: '',
-                  kitchenCleans: '',
-                  dogWalks: '',
+                  dailyData: createEmptyWeek(),
                   expensesTotal: '',
                   receiptUrls: [''],
                 })
@@ -184,59 +216,79 @@ export function WorkLogForm({ payProfile }: WorkLogFormProps) {
         <div className={styles.fadeUpSection} style={{ animationDelay: '50ms' }}>
           <Card>
             <CardHeader>
-              <CardTitle>Hours Logged</CardTitle>
-              <CardDescription>
-                {payProfile.hourlyRate 
-                  ? `Enter total hours worked at $${payProfile.hourlyRate.toFixed(2)}/hr`
-                  : 'Enter total hours worked'}
-              </CardDescription>
+              <CardTitle>Weekly Calendar Grid</CardTitle>
+              <CardDescription>Enter hours and tasks for each day. Totals are calculated automatically.</CardDescription>
             </CardHeader>
             <CardContent>
-              <Input
-                type="number"
-                label="Hours"
-                value={formData.hoursLogged}
-                onChange={e => handleChange('hoursLogged', e.target.value)}
-                placeholder="0"
-                min="0"
-                step="0.5"
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className={styles.fadeUpSection} style={{ animationDelay: '100ms' }}>
-          <Card>
-            <CardHeader>
-              <CardTitle>Task Counts</CardTitle>
-              <CardDescription>Enter the number of tasks completed</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className={styles.taskGrid}>
-                <Input
-                  type="number"
-                  label={payProfile.airbnbClean ? `Airbnb Cleans ($${payProfile.airbnbClean.toFixed(2)} each)` : 'Airbnb Cleans'}
-                  value={formData.airbnbCleans}
-                  onChange={e => handleChange('airbnbCleans', e.target.value)}
-                  placeholder="0"
-                  min="0"
-                />
-                <Input
-                  type="number"
-                  label={payProfile.kitchenClean ? `Kitchen Cleans ($${payProfile.kitchenClean.toFixed(2)} each)` : 'Kitchen Cleans'}
-                  value={formData.kitchenCleans}
-                  onChange={e => handleChange('kitchenCleans', e.target.value)}
-                  placeholder="0"
-                  min="0"
-                />
-                <Input
-                  type="number"
-                  label={payProfile.dogWalk ? `Dog Walks ($${payProfile.dogWalk.toFixed(2)} each)` : 'Dog Walks'}
-                  value={formData.dogWalks}
-                  onChange={e => handleChange('dogWalks', e.target.value)}
-                  placeholder="0"
-                  min="0"
-                />
+              <div className={styles.calendarWrapper}>
+                <table className={styles.calendarTable}>
+                  <thead>
+                    <tr>
+                      <th>Day</th>
+                      <th>Hours {payProfile.hourlyRate && <span className={styles.dayDate}>(${payProfile.hourlyRate.toFixed(2)}/hr)</span>}</th>
+                      <th>Airbnb Cleans {payProfile.airbnbClean && <span className={styles.dayDate}>(${payProfile.airbnbClean.toFixed(2)} ea)</span>}</th>
+                      <th>Kitchen Cleans {payProfile.kitchenClean && <span className={styles.dayDate}>(${payProfile.kitchenClean.toFixed(2)} ea)</span>}</th>
+                      <th>Dog Walks {payProfile.dogWalk && <span className={styles.dayDate}>(${payProfile.dogWalk.toFixed(2)} ea)</span>}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(formData.dailyData).map(([dayKey, dayData]) => (
+                      <tr key={dayKey}>
+                        <td>
+                          <span className={styles.dayLabel}>{dayKey}</span>
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.5"
+                            className={styles.gridInput}
+                            placeholder="0"
+                            value={dayData.hours}
+                            onChange={e => handleDailyChange(dayKey, 'hours', e.target.value)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            min="0"
+                            className={styles.gridInput}
+                            placeholder="0"
+                            value={dayData.airbnb}
+                            onChange={e => handleDailyChange(dayKey, 'airbnb', e.target.value)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            min="0"
+                            className={styles.gridInput}
+                            placeholder="0"
+                            value={dayData.kitchen}
+                            onChange={e => handleDailyChange(dayKey, 'kitchen', e.target.value)}
+                          />
+                        </td>
+                        <td>
+                          <input
+                            type="number"
+                            min="0"
+                            className={styles.gridInput}
+                            placeholder="0"
+                            value={dayData.dog}
+                            onChange={e => handleDailyChange(dayKey, 'dog', e.target.value)}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                    <tr className={styles.totalRow}>
+                      <td><span className={styles.dayLabel}>Totals</span></td>
+                      <td className={styles.totalValue}>{sums.hours}</td>
+                      <td className={styles.totalValue}>{sums.airbnb}</td>
+                      <td className={styles.totalValue}>{sums.kitchen}</td>
+                      <td className={styles.totalValue}>{sums.dog}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>
